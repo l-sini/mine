@@ -51,14 +51,10 @@ term.on('line', (line) => {
   if (!validCheck(line)) return printLine();
 
   for (let i = 0; i < answer.length; i++) {
-    if (answer.includes(Number(line[i]))) {
-      if (answer[i] === Number(line[i])) strikeCount++;
-      else ballCount++;
-    }
+    if (answer[i] === Number(line[i])) strikeCount++;
+    else if (answer.includes(Number(line[i]))) ballCount++;
   }
-  if (strikeCount === 3 || ++tryCount >= chance) {
-    endGame();
-  }
+  if (strikeCount === 3 || ++tryCount >= chance) return endGame();
 
   console.log(
     `${tryCount}번째 시도 ${line} - ${ballCount}볼, ${strikeCount}스트라이크`
@@ -70,14 +66,19 @@ term.on('line', (line) => {
 const printLine = () => {
   term.output.write('3개의 숫자를 입력해주세요(종료: q, 재시작: r): ');
 };
+const againLine = () => {
+  strikeCount = 0;
+  ballCount = 0;
+  tryCount = 0;
+  term.output.write('다시 시작하시려면 r, 종료하시려면 q를 입력해주세요: ');
+};
 
 const endGame = () => {
   if (strikeCount === 3)
     console.log(`${tryCount}번만에 정답을 맞추셨습니다. 축하합니다!`);
-  else return console.log(`실패하셨습니다. 정답은 ${answer}입니다.`);
+  else console.log(`실패하셨습니다. 정답은 ${answer}입니다.`);
 
-  // closeGame();
-  resetGame();
+  againLine();
 };
 
 const closeGame = () => {
@@ -86,9 +87,7 @@ const closeGame = () => {
 };
 
 const resetGame = () => {
-  strikeCount = 0;
-  ballCount = 0;
-  tryCount = 0;
+  strikeCount = ballCount = tryCount = 0;
   console.clear();
   console.log('새 게임을 시작합니다. \n');
   printLine();
