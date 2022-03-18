@@ -1,6 +1,6 @@
 const readline = require('readline');
 
-const chance = 1;
+const chance = 10;
 const answer = Array(3).fill(0);
 let strikeCount;
 let ballCount;
@@ -12,7 +12,7 @@ function startGame() {
     answer[0] = Math.floor(randomNum / 100);
     answer[1] = Math.floor((randomNum % 100) / 10);
     answer[2] = randomNum % 10;
-  } while (!duplicatedCheck(startGame));
+  } while (duplicatedCheck(answer));
 }
 
 const validCheck = (input) => {
