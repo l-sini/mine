@@ -1,6 +1,6 @@
 const readline = require('readline');
 
-const chance = 9;
+const chance = 1;
 const answer = Array(3).fill(0);
 let strikeCount;
 let ballCount;
@@ -37,21 +37,62 @@ const duplicatedCheck = (val) =>
   zeroCheck(val) || val[0] === val[1] || val[1] === val[2] || val[0] === val[2];
 
 const zeroCheck = (val) =>
-  Number(val[0]) === 0 && Number(val[1]) === 0 && Number(val[2]) === 0;
+  Number(val[0]) === 0 || Number(val[1]) === 0 || Number(val[2]) === 0;
 
 const term = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
+term.on('line', (line) => {
+  if (line === 'q') return closeGame();
+  if (line === 'r') return resetGame();
+
+  if (!validCheck(line)) return printLine();
+
+  for (let i = 0; i < answer.length; i++) {
+    if (answer.includes(Number(line[i]))) {
+      if (answer[i] === Number(line[i])) strikeCount++;
+      else ballCount++;
+    }
+  }
+  if (strikeCount === 3 || ++tryCount >= chance) {
+    endGame();
+  }
+
+  console.log(
+    `${tryCount}번째 시도 ${line} - ${ballCount}볼, ${strikeCount}스트라이크`
+  );
+  ballCount = strikeCount = 0;
+  printLine();
+});
+
 const printLine = () => {
   term.output.write('3개의 숫자를 입력해주세요(종료: q, 재시작: r): ');
 };
 
-const endGame = () => {};
+const endGame = () => {
+  if (strikeCount === 3)
+    console.log(`${tryCount}번만에 정답을 맞추셨습니다. 축하합니다!`);
+  else return console.log(`실패하셨습니다. 정답은 ${answer}입니다.`);
 
-const closeGame = () => {};
+  // closeGame();
+  resetGame();
+};
 
-const resetGame = () => {};
+const closeGame = () => {
+  console.log('종료합니다.');
+  term.close();
+};
+
+const resetGame = () => {
+  strikeCount = 0;
+  ballCount = 0;
+  tryCount = 0;
+  console.clear();
+  console.log('새 게임을 시작합니다. \n');
+  printLine();
+  startGame();
+};
 
 resetGame();
